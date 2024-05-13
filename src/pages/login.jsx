@@ -11,6 +11,7 @@ import axios from 'axios'
 import { useCookies } from 'react-cookie';
 import { API_URL } from '../App';
 
+axios.defaults.withCredentials = true
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -18,8 +19,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-
-  axios.defaults.withCredentials = true
 
   const navigate = useNavigate()
   
@@ -55,13 +54,13 @@ export default function Login() {
   async function handleLoginSubmit(e) {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      await axios.get(API_URL + `/verifyUser`, {params: {email: email, password: password}})
+      await signInWithEmailAndPassword(auth, email, password).then(axios.get(API_URL + `/verifyUser`, {params: {email: email, password: password}})
         .then((response) => {
           const user_id = response.data['id'];
           axios.post(API_URL + `/create_session/${user_id}`)
             .then((response) => {
               console.log(response);
+              navigate("/todo")
             })
             .catch((err) => {
               console.log(err);
@@ -69,9 +68,7 @@ export default function Login() {
         })
         .catch((err) => {
           console.log(err);
-        });
-
-      window.location.href = "/todo";
+        }));
     } catch (err) {
       document.getElementById('error_modal').showModal();
       console.log(err)
@@ -80,7 +77,7 @@ export default function Login() {
 
   async function handleAddAccountToDB(email, password, username) {
     axios.post(API_URL + "/createUser", { id: 0, email: email, password: password, username: username }).then(function (response) {
-      console.log(response)
+      
     })
   }
 

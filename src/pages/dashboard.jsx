@@ -17,6 +17,8 @@ import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { API_URL } from '../App';
 
+axios.defaults.withCredentials = true
+
 function App() {
 
   const [todos, setTodos] = useState([]);
@@ -70,23 +72,41 @@ function App() {
   }
 
   useEffect(() => {
-    handleWhoAmI().then((whoami) => {if (whoami) {
-      setThemeMode(cookies.themeMode)
-      axios.get(API_URL + "/getAllTasks").then((response) => {
-        const tasks = Object.entries(response.data)
-        console.log(tasks)
-        const taskData = tasks.map(task => {
-          return {
-            completed: task[1].completed,
-            title: task[1].title,
-            task_id: task[1].task_id
-          };
-        });
-        setTodos(taskData)
-      })} else document.getElementById("not_signed_in").showModal();
+    handleWhoAmI().then((whoami) => {
+      if (whoami) {
+        setThemeMode(cookies.themeMode)
+        axios.get(API_URL + "/getAllTasks").then((response) => {
+          const tasks = Object.entries(response.data)
+          console.log(tasks)
+          const taskData = tasks.map(task => {
+            return {
+              completed: task[1].completed,
+              title: task[1].title,
+              task_id: task[1].task_id
+            };
+          });
+          setTodos(taskData)
+        })
+      } else document.getElementById("not_signed_in").showModal();
     })
-    
-  }, [todos]);
+
+  }, []);
+
+  // useEffect(() => {
+  //   setThemeMode(cookies.themeMode)
+  //   axios.get(API_URL + "/getAllTasks").then((response) => {
+  //     const tasks = Object.entries(response.data)
+  //     console.log(tasks)
+  //     const taskData = tasks.map(task => {
+  //       return {
+  //         completed: task[1].completed,
+  //         title: task[1].title,
+  //         task_id: task[1].task_id
+  //       };
+  //     });
+  //     setTodos(taskData)
+  //   })
+  // }, [todos]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

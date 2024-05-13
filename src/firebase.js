@@ -34,7 +34,7 @@ const signInWithGoogle = async (e) => {
   e.preventDefault();
   try {
     const res = await signInWithPopup(auth, googleProvider);
-    window.location.href = "/todo";
+    // window.location.href = "/todo";
   } catch (err) {
 
   }
